@@ -4,6 +4,7 @@ import ttk
 import time
 import datetime
 from Tkinter import *
+from appintf.add_account import *
 class Application(Tk):
     def __init__(self):
         Tk.__init__(self)
@@ -12,6 +13,7 @@ class Application(Tk):
         self.geometry("800x200+200+200")
         data = self.load_data()
         self.createWidgets(data)
+        self.createContextMenu()
 
     def load_data(self):
         result = []
@@ -34,18 +36,21 @@ class Application(Tk):
 
     def hello(self):
         print("xxx")
+
+    def add_account(self):
+        AddAccount(self)
     
     def user_event(self, event):
         item = self.tree.selection()[0]
         print ("you clicked on ", self.tree.item(item, "values"))
 
     def right_button_sel(self, event):
-        item = self.tree.selection()[0]
-        print ("you clicked on ", self.tree.item(item, "values"))
+        self.context_menu.post(event.x_root,event.y_root)
 
     def createMenu(self):
         self.menuBar = Menu(master = self)
         self.filemenu = Menu(self.menuBar, tearoff = 0)
+        self.filemenu.add_command(label = "增加账号", command = self.add_account)
         self.filemenu.add_command(label = "导出key", command = self.hello)
         self.filemenu.add_command(label = "设置问题", command = self.hello)
         self.filemenu.add_command(label = "关闭", command = self.quit)
@@ -58,6 +63,16 @@ class Application(Tk):
         self.menuBar.add_cascade(label = "帮助", menu = self.helpmenu)
 
         self.config(menu = self.menuBar)
+        
+    def createContextMenu(self):
+        if self.tree is None:
+            return
+
+        #create right button menu
+        self.context_menu = Menu(self.tree, tearoff = 0)
+        self.context_menu.add_command(label = "删除", command = self.hello)        
+        self.context_menu.add_command(label = "查看密码", command = self.hello)        
+        
         
     def createWidgets(self, datas):
         self.tree = ttk.Treeview(master = self, show = "headings")
